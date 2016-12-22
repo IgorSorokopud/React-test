@@ -118,21 +118,14 @@ var Add = React.createClass({
         this.setState({agreeNotChecked: !this.state.agreeNotChecked});
     },
 
-    onAuthorChange: function(e) {
+    changState: function(inputName, e) {
         if (e.target.value.trim().length > 0) {
-            this.setState({authorIsEmpty: false})
+            this.setState({[''+inputName]:false})
         } else {
-            this.setState({authorIsEmpty: true})
+            this.setState({[''+inputName]:true})
         }
     },
 
-    onTextChange: function(e) {
-        if (e.target.value.trim().length > 0) {
-            this.setState({textIsEmpty: false})
-        } else {
-            this.setState({textIsEmpty: true})
-        }
-    },
     render: function () {
         return (
             <form className='add cf'>
@@ -142,14 +135,14 @@ var Add = React.createClass({
                     defaultValue=''
                     placeholder='Ваше имя'
                     ref='author'
-                    onChange={this.onAuthorChange}
+                    onChange={this.changState.bind(this, 'authorIsEmpty')}
                 />
                 <textarea
                     className='add__text'
                     defaultValue=''
                     placeholder='Текст новости'
                     ref='text'
-                    onChange={this.onTextChange}
+                    onChange={this.changState.bind(this, 'textIsEmpty')}
                 ></textarea>
                 <label className='add__checkrule'>
                     <input type='checkbox' ref='checkrule' onChange={this.onCheckRuleClick}/>Я согласен с правилами
