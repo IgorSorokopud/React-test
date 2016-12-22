@@ -1,4 +1,3 @@
-
 var my_news = [
     {
         author: 'Саша Печкин',
@@ -25,7 +24,7 @@ var Article = React.createClass({
         }
     },
 
-    readmoreClick: function(e) {
+    readmoreClick: function (e) {
         e.preventDefault();
         this.setState({visible: true});
     },
@@ -37,7 +36,7 @@ var Article = React.createClass({
         })
     },
 
-    render: function() {
+    render: function () {
         var author = this.props.data.author;
         var text = this.props.data.text;
         var bigText = this.props.data.bigText;
@@ -56,46 +55,132 @@ var Article = React.createClass({
 
 var News = React.createClass({
 
-    propTypes : {
+    getInitialState: function () {
+        return {
+            counter: 0
+        }
+    },
+
+    propTypes: {
         data: React.PropTypes.array.isRequired
     },
 
-    render: function() {
+    counterClick: function () {
+        this.setState({couter: ++this.state.counter});
+    },
+
+    render: function () {
         var data = this.props.data;
 
-        if(data.length > 0) {
-            var newsTemplate = data.map(function(item, index) {
+        if (data.length > 0) {
+            var newsTemplate = data.map(function (item, index) {
                 return (
                     <div key={index}>
-                        <Article data={item} />
+                        <Article data={item}/>
                     </div>
                 )
-        })
+            })
         } else {
             newsTemplate = <p>К сожалению новостей нет</p>
         }
 
         return (
             <div className="news">
-            {newsTemplate}
-            <strong className={'news__count ' + (data.length > 0 ? '':'none') }>Всего новостей: {data.length}</strong>
+                {newsTemplate}
+                <strong className={'news__count ' + (data.length > 0 ? '':'none')}
+                        onClick={this.counterClick}
+                >Всего новостей: {data.length}</strong>
             </div>
         );
     }
 });
 
+var Add = React.createClass({
+    getInitialState: function() { //устанавливаем начальное состояние (state)
+        return {
+            agreeNotChecked: true,
+            authorIsEmpty: true,
+            textIsEmpty: true
+        };
+    },
+    componentDidMount: function () {
+        ReactDOM.findDOMNode(this.refs.author).focus();
+    },
+    onBtnClickHandler: function (e) {
+        e.preventDefault();
+
+        var author = ReactDOM.findDOMNode(this.refs.author).value;
+        var text = ReactDOM.findDOMNode(this.refs.text).value;
+
+        alert(author + "    " + text)
+    },
+    onCheckRuleClick: function (e) {
+        this.setState({agreeNotChecked: !this.state.agreeNotChecked});
+    },
+
+    onAuthorChange: function(e) {
+        if (e.target.value.trim().length > 0) {
+            this.setState({authorIsEmpty: false})
+        } else {
+            this.setState({authorIsEmpty: true})
+        }
+    },
+
+    onTextChange: function(e) {
+        if (e.target.value.trim().length > 0) {
+            this.setState({textIsEmpty: false})
+        } else {
+            this.setState({textIsEmpty: true})
+        }
+    },
+    render: function () {
+        return (
+            <form className='add cf'>
+                <input
+                    type='text'
+                    className='add__author'
+                    defaultValue=''
+                    placeholder='Ваше имя'
+                    ref='author'
+                    onChange={this.onAuthorChange}
+                />
+                <textarea
+                    className='add__text'
+                    defaultValue=''
+                    placeholder='Текст новости'
+                    ref='text'
+                    onChange={this.onTextChange}
+                ></textarea>
+                <label className='add__checkrule'>
+                    <input type='checkbox' ref='checkrule' onChange={this.onCheckRuleClick}/>Я согласен с правилами
+                </label>
+
+                <button
+                    className='add__btn'
+                    onClick={this.onBtnClickHandler}
+                    ref='alert_button'
+                    disabled={this.state.agreeNotChecked || this.state.authorIsEmpty || this.state.textIsEmpty}
+                >
+                    Показать alert
+                </button>
+            </form>
+        );
+    }
+});
+
 var App = React.createClass({
-    render: function() {
+    render: function () {
         return (
             <div className="app">
-            <h3>Новости</h3>
-        <News data={my_news}/>
-        </div>
+                <Add />
+                <h3>Новости</h3>
+                <News data={my_news}/>
+            </div>
         );
     }
 });
 
 ReactDOM.render(
-<App />,
+    <App />,
     document.getElementById('root')
 );
